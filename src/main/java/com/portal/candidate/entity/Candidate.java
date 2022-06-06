@@ -14,18 +14,21 @@ import java.util.Date;
 @AllArgsConstructor(staticName = "build")
 @NoArgsConstructor
 @Entity
-public class Candidate extends PaymentInfo{
+public class Candidate {
 
     @Id
     @GeneratedValue
     private int id;
-    private String Name;
-    private String Address;
-    private String Job;
+    private String name;
+    private String address;
+    private String job;
 
-    private String Source;
-    private String Destination;
-    private double Fare;
+    private String source;
+    private String destination;
+    private double fare;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-mm-yyyy")
     private Date travelDate;
+
+
+
 }

@@ -19,7 +19,7 @@ public class PaymentInfo {
 
     @Id
     @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
+    //@GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private String paymentId;
     private String accountNo;
     private double amount;

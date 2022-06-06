@@ -18,11 +18,18 @@ public class CandidateService {
     @Autowired
     private CandidateDao cdo;
 
-    public Candidate saveCandidate(CandidateRequest candidateRequest)
-    {
-        Candidate candidate = Candidate.build(0, candidateRequest.getName(),
-                candidateRequest.getAddress(), candidateRequest.getJob());
-        return cdo.save(candidate);
+    public Candidate saveCandidate(CandidateRequest candidateRequest) {
+       // Candidate candidate = Candidate.build(0, candidateRequest.getName(),
+        //        candidateRequest.getAddress(), candidateRequest.getJob(), candidate.);
+
+            Candidate candidate = new Candidate();
+            candidate.setId(candidateRequest.getId());
+            candidate.setName(candidateRequest.getName());
+            candidate.setAddress(candidateRequest.getAddress());
+            candidate.setJob(candidateRequest.getJob());
+
+            return cdo.save(candidate);
+
     }
 
     // save list

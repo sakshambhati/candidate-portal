@@ -7,6 +7,8 @@ import com.portal.candidate.entity.Candidate;
 import com.portal.candidate.exception.CandidateNotFoundException;
 import com.portal.candidate.service.CandidateService;
 import com.portal.candidate.service.FlightBookingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,24 +30,37 @@ public class CandidateController {
 
     // add new candidate
     @PostMapping("/addCandidate")
-    public ResponseEntity<Candidate> addCandidate(@RequestBody @Valid CandidateRequest candidateRequest)
-    {
-        return new ResponseEntity<>(cds.saveCandidate(candidateRequest), HttpStatus.CREATED);
+    public ResponseEntity<Candidate> addCandidate(@RequestBody @Valid CandidateRequest candidateRequest) throws CandidateNotFoundException {
+        try {
+            Candidate candidate = cds.saveCandidate(candidateRequest);
+            return new ResponseEntity<>(cds.saveCandidate(candidateRequest), HttpStatus.CREATED);
+        }catch(Exception e) {
+            throw  new CandidateNotFoundException("Error while saving candidate");
+        }
     }
 
     // add new list of candidates
     @PostMapping("/addCandidates")
-    public ResponseEntity<List<Candidate>> addCandidates(@RequestBody List<Candidate> candidates)
-    {
+    public ResponseEntity<List<Candidate>> addCandidates(@RequestBody List<Candidate> candidates) throws CandidateNotFoundException {
+        try {
+            return new ResponseEntity<>(cds.saveCandidates(candidates), HttpStatus.CREATED);
+        }catch (Exception e)
+        {
+            throw new CandidateNotFoundException("Error while saving candidates");
+        }
 
-        return new ResponseEntity<>(cds.saveCandidates(candidates), HttpStatus.CREATED);
     }
 
     // fetch all candidates
     @GetMapping("/candidates")
-    public ResponseEntity<List<Candidate>> findAllCandidates()
-    {
-        return ResponseEntity.ok(cds.getCandidates());
+    public ResponseEntity<List<Candidate>> findAllCandidates() throws CandidateNotFoundException {
+        try {
+            return ResponseEntity.ok(cds.getCandidates());
+        } catch (Exception e)
+        {
+            throw new CandidateNotFoundException("unable to find required candidates");
+        }
+
     }
 
     // get candidate by id
@@ -69,9 +84,13 @@ public class CandidateController {
 
     // paging
     @GetMapping("/candidates/{pageNo}/{pageSize}")
-    public List<Candidate> findPagedCandidates(@PathVariable int pageNo, @PathVariable int pageSize)
-    {
-        return cds.getPagedCandidates(pageNo, pageSize);
+    public List<Candidate> findPagedCandidates(@PathVariable int pageNo, @PathVariable int pageSize) throws CandidateNotFoundException {
+        try {
+            return cds.getPagedCandidates(pageNo, pageSize);
+        } catch (Exception e)
+        {
+            throw new CandidateNotFoundException("unable to find required candidates");
+        }
     }
 
     // get candidate by name
@@ -92,4 +111,5 @@ public class CandidateController {
     {
         return service.bookFlightTicket(request);
     }
+
 }
