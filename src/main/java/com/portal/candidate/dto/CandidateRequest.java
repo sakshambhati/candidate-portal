@@ -14,9 +14,11 @@ public class CandidateRequest {
 
     private int id;
     @NotNull(message = "Candidate name should not be NULL")
-    private String Name;
+    private String name;
     @NotBlank
-    private String Address;
+    private String address;
     @NotBlank
-    private String Job;
+    private String job;
+    @NotBlank
+    private String mail;
 }

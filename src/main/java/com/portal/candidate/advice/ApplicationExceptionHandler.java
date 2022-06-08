@@ -1,6 +1,7 @@
 package com.portal.candidate.advice;
 
 import com.portal.candidate.exception.CandidateNotFoundException;
+import com.portal.candidate.exception.UpdationFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,6 +28,15 @@ public class ApplicationExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(CandidateNotFoundException.class)
     public Map<String, String> handleIdException(CandidateNotFoundException ex)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("ErrorMessage", ex.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(UpdationFailedException.class)
+    public Map<String, String> handleUpdationFailedException(UpdationFailedException ex)
     {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("ErrorMessage", ex.getMessage());
