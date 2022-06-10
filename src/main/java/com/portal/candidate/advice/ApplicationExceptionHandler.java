@@ -1,6 +1,7 @@
 package com.portal.candidate.advice;
 
 import com.portal.candidate.exception.CandidateNotFoundException;
+import com.portal.candidate.exception.SaveFailedException;
 import com.portal.candidate.exception.UpdationFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -39,7 +40,14 @@ public class ApplicationExceptionHandler {
     public Map<String, String> handleUpdationFailedException(UpdationFailedException ex)
     {
         Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("ErrorMessage", ex.getMessage());
+        errorMap.put("ErrorMessage ", ex.getMessage());
+        return errorMap;
+    }
+
+    public Map<String, String> handleSaveFailedException(SaveFailedException ex)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("save failed: candidate already exists ", ex.getMessage());
         return errorMap;
     }
 }

@@ -3,6 +3,7 @@ package com.portal.candidate.service;
 import com.portal.candidate.dto.CandidateRequest;
 import com.portal.candidate.entity.Candidate;
 import com.portal.candidate.exception.CandidateNotFoundException;
+import com.portal.candidate.exception.SaveFailedException;
 import com.portal.candidate.exception.UpdationFailedException;
 import com.portal.candidate.model.EmailRequest;
 import com.portal.candidate.repository.CandidateDao;
@@ -32,37 +33,44 @@ public class CandidateService {
 
     Logger log = LoggerFactory.getLogger(CandidateService.class);
 
-    public Candidate saveCandidate(CandidateRequest candidateRequest) throws UpdationFailedException {
+    public Candidate saveCandidate(CandidateRequest candidateRequest) throws UpdationFailedException, SaveFailedException {
         // Candidate candidate = Candidate.build(0, candidateRequest.getName(),
         //        candidateRequest.getAddress(), candidateRequest.getJob(), candidate.);
 
         Candidate candidate = new Candidate();
-        synchronized (candidate) {
-            candidate.setId(candidateRequest.getId());
-            candidate.setName(candidateRequest.getName());
-            candidate.setAddress(candidateRequest.getAddress());
-            candidate.setJob(candidateRequest.getJob());
-            candidate.setMail(candidateRequest.getMail());
+
+        //checking if candidate already exists or not
+        if (cdo.findByMail(candidate.getMail()) != null) throw new SaveFailedException("save failed: candidate already exists ");
+            synchronized (candidate) {
+                candidate.setId(candidateRequest.getId());
+                candidate.setName(candidateRequest.getName());
+                candidate.setAddress(candidateRequest.getAddress());
+                candidate.setJob(candidateRequest.getJob());
+                candidate.setMail(candidateRequest.getMail());
+            }
+
+            emailRequest.setSubject("Registration");
+            emailRequest.setMessage(candidate.getName() + " has been added to Portal");
+            emailRequest.setTo(candidate.getMail());
+            // sending email
+            String email = emailService.sendEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getMessage());
+            log.info("Email Response {} ", email);
+
+            return cdo.save(candidate);
         }
 
-        emailRequest.setSubject("Registration");
-        emailRequest.setMessage(candidate.getName() + " has been added to Portal");
-        emailRequest.setTo(candidate.getMail());
-        String email = emailService.sendEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getMessage());
-        log.info("Email Response {} ", email);
-
-        return cdo.save(candidate);
-
-    }
 
     // save list
-    public List<Candidate> saveCandidates(List<Candidate> candidates) throws UpdationFailedException {
+    public List<Candidate> saveCandidates(List<Candidate> candidates) throws UpdationFailedException, SaveFailedException {
         for (int i = 0; i < candidates.size(); i++) {
             Candidate c = candidates.get(i);
+            if (cdo.findByMail(c.getMail()) != null) throw new SaveFailedException("save failed: candidate already exists ");
+
             emailRequest.setSubject("Registration");
             emailRequest.setMessage(c.getName() + " has been added to Portal");
             emailRequest.setTo(c.getMail());
 
+            // sending email
             emailService.sendEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getMessage());
             log.info("Email Response {} ", c);
         }
@@ -109,6 +117,7 @@ public class CandidateService {
         emailRequest.setSubject("Updation");
         emailRequest.setMessage("Details for id " + existingCandidate.getId() + " have been updated");
         emailRequest.setTo(existingCandidate.getMail());
+        // sending email
         String email = emailService.sendEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getMessage());
         log.info("Email Response {} ", email);
 
@@ -147,7 +156,7 @@ public class CandidateService {
         return cdo.findByJob(job);
     }
 
-    public List<Candidate> updateCandidates(List<Candidate> candidates) throws UpdationFailedException {
+    public List<Candidate> updateCandidates(List<Candidate> candidates) throws UpdationFailedException, SaveFailedException {
         for (int i = 0; i < candidates.size(); i++) {
             Candidate c = candidates.get(i);
             if (c.getId() == candidates.get(i).getId()) {
@@ -158,6 +167,7 @@ public class CandidateService {
                     c.setMail(c.getMail());
                 }
             } else {
+                // if candidate not found then adding as new candidate
                 CandidateRequest candidateRequest = new CandidateRequest();
                 synchronized (candidateRequest) {
                     candidateRequest.setId(c.getId());
@@ -173,6 +183,7 @@ public class CandidateService {
             emailRequest.setMessage("Details for id " + c.getId() + " have been updated");
             emailRequest.setTo(c.getMail());
 
+            // sending email
             emailService.sendEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getMessage());
             log.info("Email Response {} ", c);
         }
