@@ -47,7 +47,7 @@ public class ApplicationExceptionHandler {
     public Map<String, String> handleSaveFailedException(SaveFailedException ex)
     {
         Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("save failed: candidate already exists ", ex.getMessage());
+        errorMap.put("ErrorMessage ", ex.getMessage());
         return errorMap;
     }
 }
