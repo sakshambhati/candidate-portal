@@ -40,7 +40,7 @@ public class CandidateService {
         Candidate candidate = new Candidate();
 
         //checking if candidate already exists or not
-        if (cdo.findByMail(candidate.getMail()) != null) throw new SaveFailedException("save failed: candidate already exists ");
+        if (cdo.findByMail(candidate.getMail()) != null) throw new SaveFailedException("save failed: candidate already exists for " + candidate.getMail());
             synchronized (candidate) {
                 candidate.setId(candidateRequest.getId());
                 candidate.setName(candidateRequest.getName());
@@ -64,15 +64,21 @@ public class CandidateService {
     public List<Candidate> saveCandidates(List<Candidate> candidates) throws UpdationFailedException, SaveFailedException {
         for (int i = 0; i < candidates.size(); i++) {
             Candidate c = candidates.get(i);
-            if (cdo.findByMail(c.getMail()) != null) throw new SaveFailedException("save failed: candidate already exists ");
+            synchronized (c) {
+                try {
+                    // //checking if candidate already exists or not
+                    if (cdo.findByMail(c.getMail()) != null) ;
+                    emailRequest.setSubject("Registration");
+                    emailRequest.setMessage(c.getName() + " has been added to Portal");
+                    emailRequest.setTo(c.getMail());
+                    // sending email
+                    emailService.sendEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getMessage());
+                    log.info("Email Response {} ", c);
 
-            emailRequest.setSubject("Registration");
-            emailRequest.setMessage(c.getName() + " has been added to Portal");
-            emailRequest.setTo(c.getMail());
-
-            // sending email
-            emailService.sendEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getMessage());
-            log.info("Email Response {} ", c);
+                } catch (Exception e) {
+                    throw new SaveFailedException("save failed: candidate already exists for " + c.getMail());
+                }
+            }
         }
         return cdo.saveAll(candidates);
     }
