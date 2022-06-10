@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.security.PrivateKey;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor(staticName = "build")
@@ -21,4 +23,9 @@ public class CandidateRequest {
     private String job;
     @NotBlank
     private String mail;
+
+    private String source;
+    private String destination;
+    private double fare;
+    private Date travelDate;
 }

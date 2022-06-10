@@ -46,6 +46,10 @@ public class CandidateService {
                 candidate.setName(candidateRequest.getName());
                 candidate.setAddress(candidateRequest.getAddress());
                 candidate.setJob(candidateRequest.getJob());
+                candidate.setSource(candidateRequest.getSource());
+                candidate.setDestination(candidateRequest.getDestination());
+                candidate.setTravelDate(candidateRequest.getTravelDate());
+                candidate.setFare(candidateRequest.getFare());
                 candidate.setMail(candidateRequest.getMail());
             }
 
